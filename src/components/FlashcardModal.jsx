@@ -1,9 +1,11 @@
 import React from 'react';
 import { X } from 'lucide-react';
+import PixelFrame from './PixelFrame';
 
 export default function FlashcardModal({ flashcard, isFlipped, onFlip, onClose }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    
+    <div  className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
       <div className="relative max-w-lg w-full">
         <button
           onClick={onClose}
@@ -18,18 +20,18 @@ export default function FlashcardModal({ flashcard, isFlipped, onFlip, onClose }
         >
           <div className={`relative w-full h-full transition-transform duration-700 preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
             {/* Front */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl p-8 flex items-center justify-center backface-hidden">
+            <PixelFrame className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl p-8 flex items-center justify-center backface-hidden">
               <h3 className="text-2xl font-bold text-center text-white">
                 {flashcard.front}
               </h3>
-            </div>
+            </PixelFrame>
             
             {/* Back */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl p-8 flex items-center justify-center backface-hidden rotate-y-180">
+            <PixelFrame className="absolute inset-0 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl p-8 flex items-center justify-center backface-hidden rotate-y-180">
               <p className="text-lg text-center text-white leading-relaxed">
                 {flashcard.back}
               </p>
-            </div>
+            </PixelFrame>
           </div>
         </div>
 

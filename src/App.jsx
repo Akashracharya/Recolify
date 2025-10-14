@@ -148,7 +148,7 @@ export default function App() {
       )}
 
       {showFlashcardModal && currentFlashcard && (
-        <FlashcardModal
+        <FlashcardModal 
           flashcard={currentFlashcard}
           isFlipped={isFlipped}
           onFlip={() => setIsFlipped(!isFlipped)}

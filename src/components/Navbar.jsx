@@ -19,11 +19,11 @@ export default function Navbar({ setCurrentView, setShowTimerModal, timeLeft, fo
           
             <PixelPressableButton
             onClick={() => setShowTimerModal(true)}
-            className=""
+            className="w-[27vw] h-12"
           >
-            <Clock size={18} />
-            <span className="text-sm font-bold">
-              {timeLeft ? (timeLeft < 3600000 ? '🚨 ' + formatTime(timeLeft) : formatTime(timeLeft)) : 'Set Exam Timer'}
+            
+            <span className="text-xl font-bold ">
+              {timeLeft ? (timeLeft < 3600000 ? ' ' + formatTime(timeLeft) : formatTime(timeLeft)) : 'Set Exam Timer'}
             </span>
           </PixelPressableButton>
          

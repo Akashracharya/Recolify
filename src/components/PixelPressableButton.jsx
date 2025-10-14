@@ -25,7 +25,7 @@ const PixelPressableButton = ({ children, onClick, className = '' }) => {
       <span
         style={frameStyles}
         className="
-          before absolute inset-0 z-20 bottom-[4px] bg-amber-400 text-yellow-800
+          before absolute inset-0 z-20 bottom-[5px] bg-amber-400 text-yellow-800
           transition-all duration-100 ease-in-out
           group-active:top-[6px] group-active:bottom-0
         "
