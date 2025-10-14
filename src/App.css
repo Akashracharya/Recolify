@@ -1,0 +1,115 @@
+/* App.css */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@400;700;900&display=swap');
+
+/* Tailwind base styles would be included here */
+/* For this example, I'll include key custom styles */
+
+.retro-font {
+  font-family: 'Orbitron', 'VT323', monospace;
+}
+
+.pixel-corners {
+  border-radius: 8px;
+}
+
+.pixel-border {
+  border: 2px solid;
+  border-image: linear-gradient(45deg, #00FFFF, #FF00FF) 1;
+}
+
+.neon-text {
+  text-shadow: 
+    0 0 5px #00FFFF,
+    0 0 10px #00FFFF,
+    0 0 20px #00FFFF;
+}
+
+.neon-gold {
+  text-shadow: 
+    0 0 5px #FFD700,
+    0 0 10px #FFD700,
+    0 0 20px #FFD700;
+}
+
+.neon-purple {
+  text-shadow: 
+    0 0 5px #FF00FF,
+    0 0 10px #FF00FF;
+}
+
+.game-button {
+  border: 2px solid;
+  border-image: linear-gradient(45deg, #00FFFF, #FF00FF) 1;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 5px 15px rgba(0, 255, 255, 0.4),
+    0 0 20px rgba(255, 0, 255, 0.2);
+}
+
+.game-button:active {
+  transform: translateY(0);
+}
+
+.led-display {
+  background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
+  text-shadow: 
+    0 0 10px currentColor,
+    0 0 20px currentColor;
+  letter-spacing: 2px;
+}
+
+/* Flashcard flip animations */
+.perspective {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.flipped .preserve-3d {
+  transform: rotateY(180deg);
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+  .retro-font {
+    font-size: 0.9em;
+  }
+  
+  .pixel-corners {
+    border-radius: 6px;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #00FFFF, #FF00FF);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #00CCCC, #CC00CC);
+}
