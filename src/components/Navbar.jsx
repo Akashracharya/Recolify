@@ -1,5 +1,8 @@
 import React from 'react';
 import { Settings, Clock, User } from 'lucide-react';
+import PixelFrame from '../components/PixelFrame';
+import PixelPressableButton from '../components/PixelPressableButton';
+
 
 export default function Navbar({ setCurrentView, setShowTimerModal, timeLeft, formatTime }) {
   return (
@@ -13,15 +16,17 @@ export default function Navbar({ setCurrentView, setShowTimerModal, timeLeft, fo
             RECOLIFY
           </div>
           
-          <button
+          
+            <PixelPressableButton
             onClick={() => setShowTimerModal(true)}
-            className="flex items-center space-x-2 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 px-4 py-2 rounded-lg transition-all hover:scale-105 hover:shadow-lg hover:shadow-red-500/25"
+            className=""
           >
             <Clock size={18} />
             <span className="text-sm font-bold">
               {timeLeft ? (timeLeft < 3600000 ? '🚨 ' + formatTime(timeLeft) : formatTime(timeLeft)) : 'Set Exam Timer'}
             </span>
-          </button>
+          </PixelPressableButton>
+         
           
           <div className="flex items-center space-x-4">
             <User className="w-6 h-6 hover:text-cyan-400 cursor-pointer transition-colors" />
