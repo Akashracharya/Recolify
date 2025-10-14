@@ -4,6 +4,7 @@ import HomePage from './components/HomePage';
 import SubjectPage from './components/SubjectPage';
 import TimerModal from './components/TimerModal';
 import FlashcardModal from './components/FlashcardModal';
+import PixelFrame from './components/PixelFrame.jsx';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('home'); // 'home' or 'subject'
@@ -100,6 +101,7 @@ export default function App() {
   };
 
   return (
+    
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 text-white font-orbitron">
       <Navbar 
         setCurrentView={setCurrentView}
