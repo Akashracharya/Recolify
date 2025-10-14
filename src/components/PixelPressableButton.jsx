@@ -19,7 +19,7 @@ const PixelPressableButton = ({ children, onClick, className = '' }) => {
     <button
       onClick={onClick}
       // Add 'group' to enable group-active states on children
-      className={`group font-pixel relative border-none bg-transparent text-black text-sm font-bold tracking-wider ${className}`}
+      className={`cursor-pointer group font-pixel relative border-none bg-transparent text-black text-sm font-bold tracking-wider ${className}`}
     >
       {/* Layer 2: The Top Face */}
       <span

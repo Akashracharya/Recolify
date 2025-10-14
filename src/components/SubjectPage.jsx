@@ -20,17 +20,17 @@ export default function SubjectPage({ subject, activeTab, setActiveTab, studyDat
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex items-center mb-8">
-        <button
+        <PixelPressableButton
           onClick={onBack}
-          className=" cursor-pointer mr-4 p-2 hover:bg-gray-800 rounded-lg transition-colors"
+          className=" cursor-pointer mr-4 p-1 hover:bg-gray-800 rounded-lg transition-colors"
         >
           <span className="text-3xl">←</span>
-        </button>
+        </PixelPressableButton>
         <div>
           <h1 className="text-3xl md:text-4xl font-bold" style={{ color: subject.color }}>
             {subject.name}
           </h1>
-          <p className="text-gray-400">Master your {subject.name.toLowerCase()} concepts</p>
+          <p className="text-gray-400">Recoll your {subject.name.toLowerCase()} concepts</p>
         </div>
       </div>
 
@@ -47,19 +47,19 @@ export default function SubjectPage({ subject, activeTab, setActiveTab, studyDat
       </PixelFrame>
 
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-lg border-t border-purple-500/30 z-40">
-        <div className="grid grid-cols-4 gap-1 p-2">
+        <div className="grid grid-cols-2 gap-2 p-2 ">
           {tabs.map((tab) => (
-            <button
+            <PixelPressableButton
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`py-3 px-2 rounded-lg text-xs transition-all ${
+              className={`py-3 rounded-lg text-xs h-14 ${
                 activeTab === tab
-                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                  ? ''
+                  : 'text-white  hover:text-white hover:bg-gray-700/50'
               }`}
             >
               {tab.split('/')[0]}
-            </button>
+            </PixelPressableButton>
           ))}
         </div>
       </div>

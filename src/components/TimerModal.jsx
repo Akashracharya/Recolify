@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
+import PixelFrame from '../components/PixelFrame';
+import PixelPressableButton from '../components/PixelPressableButton';
+
+
 
 export default function TimerModal({ onClose, onSetTimer, currentTime, onReset }) {
   const [hours, setHours] = useState(1);
@@ -10,9 +14,9 @@ export default function TimerModal({ onClose, onSetTimer, currentTime, onReset }
       <div className="bg-gray-800 rounded-2xl p-8 max-w-md w-full mx-4 border border-purple-500/30">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-2xl font-bold">Exam Timer</h3>
-          <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-lg">
+          <PixelPressableButton onClick={onClose} className="p-2 hover:bg-gray-700 rounded-lg">
             <X size={20} />
-          </button>
+          </PixelPressableButton>
         </div>
 
         {currentTime ? (
@@ -75,18 +79,18 @@ export default function TimerModal({ onClose, onSetTimer, currentTime, onReset }
             </>
           ) : (
             <>
-              <button
+              <PixelPressableButton
                 onClick={onClose}
-                className="flex-1 bg-gray-600 hover:bg-gray-700 px-4 py-3 rounded-lg transition-colors"
+                className="flex-1 px-4 py-3 "
               >
                 Cancel
-              </button>
-              <button
+              </PixelPressableButton>
+              <PixelPressableButton
                 onClick={() => onSetTimer(hours, minutes)}
-                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-4 py-3 rounded-lg transition-all"
+                className="flex-1 px-4 py-3"
               >
                 Start Timer
-              </button>
+              </PixelPressableButton>
             </>
           )}
         </div>
