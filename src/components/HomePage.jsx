@@ -49,7 +49,7 @@ export default function HomePage({ subjects, onSelectSubject, onAddSubject }) {
         ))}
       </div>
 
-      <div className="fixed bottom-8 right-8">
+      <div className="fixed md:mr-80 bottom-8 right-8">
         <PixelPressableButton
           onClick={() => setShowAddModal(true)}
           className="full p-2 animate-bounce-slow"
