@@ -1,13 +1,14 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@400;700;900&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Doto:wght@100..900&display=swap');
 
 
 .font-orbitron {
-  font-family: 'Orbitron', monospace;
+  font-family: 'Orbitron', monospace , 'Doto';
 }
 .font-pixel {
-  font-family: 'Press Start 2P', monospace;
+  font-family: 'Press Start 2P', monospace ,'doto';
 }
 
 @keyframes glow {

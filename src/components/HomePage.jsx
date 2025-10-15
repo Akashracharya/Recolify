@@ -19,7 +19,7 @@ export default function HomePage({ subjects, onSelectSubject, onAddSubject }) {
     
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-">
       <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-6xl font-black mb-4 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+        <h1 className="text-4xl md:text-6xl font-black mb-4  bg-white bg-clip-text text-transparent">
           Choose Your Subject 
         </h1>
         <p className="text-gray-400 text-lg">Level up your exam prep game!</p>
@@ -29,9 +29,9 @@ export default function HomePage({ subjects, onSelectSubject, onAddSubject }) {
         {subjects.map((subject) => (
           <div key={subject.id}
             onClick={() => onSelectSubject(subject)}>
-          <PixelFrame
-            
-            className="group relative bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 cursor-pointer hover:bg-gray-700/50 hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/25"
+          <PixelFrame borderColor="#475569"
+           
+            className="group relative bg-gray-950 p-6 cursor-pointer "
             style={{ '--subject-color': subject.color }}
           >
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br opacity-0 group-hover:opacity-20 transition-opacity" 

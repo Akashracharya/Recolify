@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import HomePage from './components/HomePage';
-import SubjectPage from './components/SubjectPage';
+import SubjectPage from './components/SubjectPage.jsx';
 import TimerModal from './components/TimerModal';
 import FlashcardModal from './components/FlashcardModal';
 import PixelFrame from './components/PixelFrame.jsx';
@@ -27,7 +27,7 @@ export default function App() {
   const [studyData, setStudyData] = useState({
     'Tricky Words': [
       { id: 1, content: 'Photosynthesis', flashcard: { front: 'Photosynthesis', back: 'The process by which plants convert light energy into chemical energy' }},
-      { id: 2, content: 'Mitochondria', flashcard: { front: 'Mitochondria', back: 'The powerhouse of the cell - organelles that produce ATP energy' }},
+      
     ],
     'Definitions': [
       { id: 1, content: 'Entropy', flashcard: { front: 'Entropy', back: 'A measure of disorder or randomness in a system' }},
@@ -94,6 +94,14 @@ export default function App() {
     }));
   };
 
+  const deleteStudyItem = (category , itemId) => {
+    
+    setStudyData(prev =>({
+      ...prev,
+      [category]: prev[category].filter(item => item.id !== itemId)
+    }));
+  };
+
   const openFlashcard = (item) => {
     setCurrentFlashcard(item.flashcard);
     setIsFlipped(false);
@@ -102,7 +110,7 @@ export default function App() {
 
   return (
     
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 text-white font-orbitron">
+    <div className="min-h-screen  bg-gray-950 text-white font-orbitron">
       <Navbar 
         setCurrentView={setCurrentView}
         setShowTimerModal={setShowTimerModal}
@@ -130,6 +138,7 @@ export default function App() {
             studyData={studyData}
             onAddItem={addStudyItem}
             onOpenFlashcard={openFlashcard}
+            onDeleteItem={deleteStudyItem}
             onBack={() => setCurrentView('home')}
           />
         )}
