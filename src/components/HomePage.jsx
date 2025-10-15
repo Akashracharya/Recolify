@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import PixelFrame from '../components/PixelFrame';
+import PixelPressableButton from './PixelPressableButton';
 
 export default function HomePage({ subjects, onSelectSubject, onAddSubject }) {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -77,12 +78,12 @@ export default function HomePage({ subjects, onSelectSubject, onAddSubject }) {
               >
                 Cancel
               </button>
-              <button
+              <PixelPressableButton
                 onClick={handleAddSubject}
                 className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-4 py-3 rounded-lg transition-all"
               >
                 Add Subject
-              </button>
+              </PixelPressableButton>
             </div>
           </div>
         </div>
