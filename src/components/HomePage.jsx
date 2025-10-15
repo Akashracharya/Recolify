@@ -50,17 +50,17 @@ export default function HomePage({ subjects, onSelectSubject, onAddSubject }) {
       </div>
 
       <div className="fixed bottom-8 right-8">
-        <button
+        <PixelPressableButton
           onClick={() => setShowAddModal(true)}
-          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-full p-4 shadow-2xl hover:scale-110 transition-all animate-bounce-slow hover:shadow-green-500/50"
+          className="full p-2 animate-bounce-slow"
         >
           <Plus size={24} />
-        </button>
+        </PixelPressableButton>
       </div>
 
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="bg-gray-800 rounded-2xl p-8 max-w-md w-full mx-4 border border-purple-500/30">
+          <PixelFrame className="bg-gray-800 rounded-2xl p-8 max-w-md w-full mx-4 border border-purple-500/30">
             <h3 className="text-2xl font-bold mb-6 text-center">Add New Subject</h3>
             <input
               type="text"
@@ -72,20 +72,20 @@ export default function HomePage({ subjects, onSelectSubject, onAddSubject }) {
               autoFocus
             />
             <div className="flex space-x-4">
-              <button
+              <PixelPressableButton
                 onClick={() => setShowAddModal(false)}
-                className="flex-1 bg-gray-600 hover:bg-gray-700 px-4 py-3 rounded-lg transition-colors"
+                className="flex-1 p-1"
               >
                 Cancel
-              </button>
+              </PixelPressableButton>
               <PixelPressableButton
                 onClick={handleAddSubject}
-                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 px-4 py-3 rounded-lg transition-all"
+                className="flex-1 p-1"
               >
                 Add Subject
               </PixelPressableButton>
             </div>
-          </div>
+          </PixelFrame>
         </div>
       )}
       
