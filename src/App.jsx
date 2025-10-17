@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; 
 import Navbar from './components/Navbar';
 import HomePage from './components/HomePage';
 import SubjectPage from './components/SubjectPage.jsx';
@@ -9,12 +10,7 @@ import PixelFrame from './components/PixelFrame.jsx';
 export default function App() {
   const [currentView, setCurrentView] = useState('home'); // 'home' or 'subject'
   const [selectedSubject, setSelectedSubject] = useState(null);
-  const [subjects, setSubjects] = useState([
-    { id: 1, name: 'Mathematics', color: '#FF6B6B' },
-    { id: 2, name: 'Physics', color: '#4ECDC4' },
-    { id: 3, name: 'Chemistry', color: '#45B7D1' },
-    { id: 4, name: 'History', color: '#96CEB4' },
-  ]);
+  const [subjects, setSubjects] = useState([]);
   
   const [activeTab, setActiveTab] = useState('Tricky Words');
   const [showTimerModal, setShowTimerModal] = useState(false);
@@ -39,6 +35,26 @@ export default function App() {
       { id: 1, content: '1066 - Battle of Hastings', flashcard: { front: '1066', back: 'Battle of Hastings - Norman conquest of England' }},
     ],
   });
+
+
+  useEffect(() => {
+    axios.get('/api/subjects')
+      .then(response => {
+        // Defensive check: Make sure the response data is actually an array
+        if (Array.isArray(response.data)) {
+          // MongoDB uses '_id', so we map it to 'id' for consistency in the frontend
+          const subjectsWithId = response.data.map(subject => ({ ...subject, id: subject._id }));
+          setSubjects(subjectsWithId);
+        } else {
+          console.error("Fetched data is not an array:", response.data);
+          setSubjects([]);
+        }
+      })
+      .catch(error => {
+        console.error("There was an error fetching the subjects!", error);
+        setSubjects([]);
+      });
+  }, []); // The empty array [] means this effect runs only once.
 
   // Timer logic
   useEffect(() => {
@@ -74,12 +90,30 @@ export default function App() {
 
   const addSubject = (name) => {
     const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57', '#FF9FF3'];
-    const newSubject = {
-      id: Date.now(),
+    const newSubjectData = {
       name,
       color: colors[Math.floor(Math.random() * colors.length)]
     };
-    setSubjects([...subjects, newSubject]);
+
+    axios.post('/api/subjects/add', newSubjectData)
+      .then(res => {
+        const savedSubject = { ...res.data, id: res.data._id };
+        setSubjects([...subjects, savedSubject]);
+      })
+      .catch(error => {
+        console.error("There was an error adding the subject!", error);
+      });
+  };
+
+ const deleteSubject = (id) => {
+    axios.delete(`/api/subjects/${id}`)
+      .then(res => {
+        console.log(res.data);
+        setSubjects(subjects.filter(subject => subject.id !== id));
+      })
+      .catch(error => {
+        console.error("There was an error deleting the subject!", error);
+      });
   };
 
   const addStudyItem = (category, content) => {
@@ -127,6 +161,7 @@ export default function App() {
               setCurrentView('subject');
             }}
             onAddSubject={addSubject}
+            onDeleteSubject={deleteSubject}
           />
         )}
         

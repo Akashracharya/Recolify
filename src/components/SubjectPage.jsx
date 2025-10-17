@@ -55,10 +55,11 @@ export default function SubjectPage({ subject, activeTab, setActiveTab, studyDat
             <PixelPressableButton
               key={tab}
               onClick={() => setActiveTab(tab)}
+              
               className={`py-3 rounded-lg font-bold text-xs h-14 ${
                 activeTab === tab
                   ? ''
-                  : 'text-white  hover:text-white hover:bg-gray-700/50'
+                  : 'text-white  hover:text-white  hover:bg-gray-700/50'
               }`}
             >
               {tab.split('/')[0]}

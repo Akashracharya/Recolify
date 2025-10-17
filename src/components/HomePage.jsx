@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus ,X} from 'lucide-react';
 import PixelFrame from '../components/PixelFrame';
 import PixelPressableButton from './PixelPressableButton';
 
-export default function HomePage({ subjects, onSelectSubject, onAddSubject }) {
+export default function HomePage({ subjects, onSelectSubject, onAddSubject ,onDeleteSubject }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newSubjectName, setNewSubjectName] = useState('');
 
@@ -34,6 +34,23 @@ export default function HomePage({ subjects, onSelectSubject, onAddSubject }) {
             className="group relative bg-gray-950 p-6 cursor-pointer "
             style={{ '--subject-color': subject.color }}
           >
+
+
+            
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); // Prevents the card's click event from firing
+                onDeleteSubject(subject.id);
+              }}
+              className="absolute top-2 right-2 z-20 p-1.5 bg-gray-900/50 rounded-full text-gray-400 hover:bg-red-500/50 hover:text-white transition-colors opacity-0 group-hover:opacity-100"
+              aria-label="Delete subject"
+            >
+              <X size={16} />
+            </button>
+
+
+            
+            <div onClick={() => onSelectSubject(subject)} className="cursor-pointer"></div>
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br opacity-0 group-hover:opacity-20 transition-opacity" 
                  style={{ background: `linear-gradient(135deg, ${subject.color}40, ${subject.color}10)` }}></div>
             <div className="relative z-10">
