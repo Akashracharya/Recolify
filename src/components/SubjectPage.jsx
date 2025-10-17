@@ -4,9 +4,13 @@ import PixelFrame from '../components/PixelFrame';
 import PixelPressableButton from '../components/PixelPressableButton';
 import {Trash2 } from 'lucide-react';
 
-export default function SubjectPage({ subject, activeTab, setActiveTab, studyData, onAddItem, onOpenFlashcard,onDeleteItem, onBack }) {
+export default function SubjectPage({ subject, studyItems = [], activeTab, setActiveTab, onAddItem, onOpenFlashcard, onDeleteItem, onBack }) {
   const [newItemContent, setNewItemContent] = useState('');
   const tabs = ['Tricky Words', 'Definitions', 'Formulas', 'Dates/Events'];
+
+  if (!subject) {
+    return null; // Or you could return a loading spinner component here
+  }
 
   const handleAddItem = () => {
     if (newItemContent.trim()) {
@@ -15,7 +19,7 @@ export default function SubjectPage({ subject, activeTab, setActiveTab, studyDat
     }
   };
   
-  const currentItems = studyData[activeTab] || [];
+  const currentItems = studyItems.filter(item => item.category === activeTab);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -112,7 +116,7 @@ export default function SubjectPage({ subject, activeTab, setActiveTab, studyDat
               shadowColor="#780000"    // green-700
               textColor="#ffffff"
               
-                  onClick={() => onDeleteItem(activeTab, item.id)} // <-- Make sure this line is correct
+                  onClick={() => onDeleteItem(item.id)} // <-- Make sure this line is correct
                   className=" p-1"
                 >
                   <Trash2 size={16} />

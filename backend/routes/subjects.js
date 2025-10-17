@@ -1,33 +1,44 @@
 const router = require('express').Router();
 let Subject = require('../models/subject.model');
+let StudyItem = require('../models/studyItem.model'); // <-- We need to import the StudyItem model
 
-// GET all subjects at '/' (which corresponds to '/api/subjects')
+// GET all subjects
 router.route('/').get((req, res) => {
   Subject.find()
     .then(subjects => res.json(subjects))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-// ADD a new subject at '/add' (which corresponds to '/api/subjects/add')
+// ADD a new subject
 router.route('/add').post((req, res) => {
   const { name, color } = req.body;
-
-  if (!name || !color) {
-    return res.status(400).json('Error: Name and color are required.');
-  }
-
   const newSubject = new Subject({ name, color });
 
   newSubject.save()
-    .then(savedSubject => res.status(201).json(savedSubject)) // Use 201 for successful creation
+    .then(savedSubject => res.status(201).json(savedSubject))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-// DELETE a subject at '/:id' (e.g., '/api/subjects/12345')
-router.route('/:id').delete((req, res) => {
-  Subject.findByIdAndDelete(req.params.id)
-    .then(() => res.json('Subject deleted.'))
-    .catch(err => res.status(400).json('Error: ' + err));
+// --- UPDATED DELETE LOGIC ---
+router.route('/:id').delete(async (req, res) => {
+  const subjectId = req.params.id;
+
+  try {
+    // Step 1: Delete all study items associated with the subject
+    await StudyItem.deleteMany({ subjectId: subjectId });
+
+    // Step 2: Delete the subject itself
+    const deletedSubject = await Subject.findByIdAndDelete(subjectId);
+
+    if (!deletedSubject) {
+      return res.status(404).json('Error: Subject not found.');
+    }
+
+    res.json('Subject and all associated study items deleted.');
+    
+  } catch (err) {
+    res.status(400).json('Error: ' + err);
+  }
 });
 
 module.exports = router;

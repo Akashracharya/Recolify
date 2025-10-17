@@ -11,6 +11,8 @@ export default function App() {
   const [currentView, setCurrentView] = useState('home'); // 'home' or 'subject'
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [subjects, setSubjects] = useState([]);
+
+  const [studyItems, setStudyItems] = useState([]);
   
   const [activeTab, setActiveTab] = useState('Tricky Words');
   const [showTimerModal, setShowTimerModal] = useState(false);
@@ -19,34 +21,15 @@ export default function App() {
   const [timeLeft, setTimeLeft] = useState(null);
   const [currentFlashcard, setCurrentFlashcard] = useState(null);
   const [isFlipped, setIsFlipped] = useState(false);
-  
-  const [studyData, setStudyData] = useState({
-    'Tricky Words': [
-      { id: 1, content: 'Photosynthesis', flashcard: { front: 'Photosynthesis', back: 'The process by which plants convert light energy into chemical energy' }},
-      
-    ],
-    'Definitions': [
-      { id: 1, content: 'Entropy', flashcard: { front: 'Entropy', back: 'A measure of disorder or randomness in a system' }},
-    ],
-    'Formulas': [
-      { id: 1, content: 'E = mc²', flashcard: { front: 'E = mc²', back: 'Einstein\'s mass-energy equivalence formula' }},
-    ],
-    'Dates/Events': [
-      { id: 1, content: '1066 - Battle of Hastings', flashcard: { front: '1066', back: 'Battle of Hastings - Norman conquest of England' }},
-    ],
-  });
-
 
   useEffect(() => {
     axios.get('/api/subjects')
       .then(response => {
-        // Defensive check: Make sure the response data is actually an array
         if (Array.isArray(response.data)) {
-          // MongoDB uses '_id', so we map it to 'id' for consistency in the frontend
           const subjectsWithId = response.data.map(subject => ({ ...subject, id: subject._id }));
           setSubjects(subjectsWithId);
         } else {
-          console.error("Fetched data is not an array:", response.data);
+          console.error("Fetched subjects data is not an array:", response.data);
           setSubjects([]);
         }
       })
@@ -117,23 +100,44 @@ export default function App() {
   };
 
   const addStudyItem = (category, content) => {
-    const newItem = {
-      id: Date.now(),
+    if (!selectedSubject) return;
+    const newItemData = {
       content,
-      flashcard: { front: content, back: 'AI-generated definition will appear here...' }
+      category,
+      flashcard: { front: content, back: 'Click to edit...' },
+      subjectId: selectedSubject.id
     };
-    setStudyData(prev => ({
-      ...prev,
-      [category]: [...(prev[category] || []), newItem]
-    }));
+    axios.post('/api/studyitems/add', newItemData)
+      .then(res => {
+        const savedItem = { ...res.data, id: res.data._id };
+        setStudyItems([...studyItems, savedItem]);
+      })
+      .catch(error => console.error("There was an error adding the study item!", error));
   };
 
-  const deleteStudyItem = (category , itemId) => {
-    
-    setStudyData(prev =>({
-      ...prev,
-      [category]: prev[category].filter(item => item.id !== itemId)
-    }));
+  const fetchStudyItems = (subjectId) => {
+    axios.get(`/api/studyitems/subject/${subjectId}`)
+      .then(response => {
+        if (Array.isArray(response.data)) {
+          const itemsWithId = response.data.map(item => ({ ...item, id: item._id }));
+          setStudyItems(itemsWithId);
+        } else {
+          console.error("Fetched study items data is not an array:", response.data);
+          setStudyItems([]);
+        }
+      })
+      .catch(error => {
+        console.error(`Error fetching study items for subject ${subjectId}:`, error);
+        setStudyItems([]);
+      });
+  };
+
+  const deleteStudyItem = (itemId) => {
+    axios.delete(`/api/studyitems/${itemId}`)
+      .then(() => {
+        setStudyItems(studyItems.filter(item => item.id !== itemId));
+      })
+      .catch(error => console.error("Error deleting study item:", error));
   };
 
   const openFlashcard = (item) => {
@@ -141,6 +145,19 @@ export default function App() {
     setIsFlipped(false);
     setShowFlashcardModal(true);
   };
+
+  const handleSelectSubject = (subject) => {
+    setSelectedSubject(subject);
+    fetchStudyItems(subject.id); // Fetch items when a subject is selected
+    setCurrentView('subject');
+  };
+
+  const handleBackToHome = () => {
+    setCurrentView('home');
+    setSelectedSubject(null);
+    setStudyItems([]); // Clear study items when going back home
+  };
+
 
   return (
     
@@ -156,10 +173,7 @@ export default function App() {
         {currentView === 'home' && (
           <HomePage 
             subjects={subjects}
-            onSelectSubject={(subject) => {
-              setSelectedSubject(subject);
-              setCurrentView('subject');
-            }}
+            onSelectSubject={handleSelectSubject}
             onAddSubject={addSubject}
             onDeleteSubject={deleteSubject}
           />
@@ -168,9 +182,9 @@ export default function App() {
         {currentView === 'subject' && selectedSubject && (
           <SubjectPage
             subject={selectedSubject}
+            studyItems={studyItems}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
-            studyData={studyData}
             onAddItem={addStudyItem}
             onOpenFlashcard={openFlashcard}
             onDeleteItem={deleteStudyItem}
