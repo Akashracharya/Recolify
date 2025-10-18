@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios'; 
+// src/App.jsx
+import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+import { useAuth0 } from '@auth0/auth0-react';
 import Navbar from './components/Navbar';
 import HomePage from './components/HomePage';
 import SubjectPage from './components/SubjectPage.jsx';
 import TimerModal from './components/TimerModal';
 import FlashcardModal from './components/FlashcardModal';
-import PixelFrame from './components/PixelFrame.jsx';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('home'); // 'home' or 'subject'
+  const { isAuthenticated, isLoading, loginWithRedirect, getAccessTokenSilently } = useAuth0();
+  const [currentView, setCurrentView] = useState('home');
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [subjects, setSubjects] = useState([]);
-
   const [studyItems, setStudyItems] = useState([]);
-  
   const [activeTab, setActiveTab] = useState('Tricky Words');
   const [showTimerModal, setShowTimerModal] = useState(false);
   const [showFlashcardModal, setShowFlashcardModal] = useState(false);
@@ -22,25 +22,142 @@ export default function App() {
   const [currentFlashcard, setCurrentFlashcard] = useState(null);
   const [isFlipped, setIsFlipped] = useState(false);
 
-  useEffect(() => {
-    axios.get('/api/subjects')
-      .then(response => {
-        if (Array.isArray(response.data)) {
-          const subjectsWithId = response.data.map(subject => ({ ...subject, id: subject._id }));
-          setSubjects(subjectsWithId);
-        } else {
-          console.error("Fetched subjects data is not an array:", response.data);
-          setSubjects([]);
-        }
-      })
-      .catch(error => {
-        console.error("There was an error fetching the subjects!", error);
-        setSubjects([]);
+  // This function will fetch subjects for the logged-in user
+  const fetchSubjects = useCallback(async () => {
+    try {
+      const token = await getAccessTokenSilently();
+      const response = await axios.get('/api/subjects', {
+        headers: { Authorization: `Bearer ${token}` },
       });
-  }, []); // The empty array [] means this effect runs only once.
+      const subjectsWithId = response.data.map(subject => ({ ...subject, id: subject._id }));
+      setSubjects(subjectsWithId);
+    } catch (error) {
+      console.error("Could not fetch subjects:", error);
+    }
+  }, [getAccessTokenSilently]);
 
-  // Timer logic
+  // This powerful hook handles all data logic based on auth state
   useEffect(() => {
+    if (isAuthenticated) {
+      // If user is logged in, fetch their data
+      fetchSubjects();
+    } else {
+      // If user is logged out, clear all local state
+      setSubjects([]);
+      setStudyItems([]);
+      setSelectedSubject(null);
+      setCurrentView('home');
+    }
+  }, [isAuthenticated, fetchSubjects]);
+
+  // --- All your other functions (addSubject, deleteSubject, etc.) are already correct
+  // because they use getAccessTokenSilently. No changes needed there! ---
+
+  // ... (addSubject, deleteSubject, addStudyItem, deleteStudyItem functions)
+  
+  const addSubject = async (name) => {
+    if (!isAuthenticated) {
+      loginWithRedirect();
+      return;
+    }
+    try {
+      const token = await getAccessTokenSilently();
+      const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57', '#FF9FF3'];
+      const newSubjectData = {
+        name,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      };
+
+      const res = await axios.post('/api/subjects/add', newSubjectData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const savedSubject = { ...res.data, id: res.data._id };
+      setSubjects([...subjects, savedSubject]);
+    } catch (error) {
+      console.error("There was an error adding the subject!", error);
+    }
+  };
+
+ const deleteSubject = async (id) => {
+    if (!isAuthenticated) {
+        loginWithRedirect();
+        return;
+    }
+    try {
+        const token = await getAccessTokenSilently();
+        await axios.delete(`/api/subjects/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        setSubjects(subjects.filter(subject => subject.id !== id));
+    } catch (error) {
+        console.error("There was an error deleting the subject!", error);
+    }
+  };
+
+  const addStudyItem = async (category, content) => {
+    if (!isAuthenticated) {
+      loginWithRedirect();
+      return;
+    }
+    if (!selectedSubject) return;
+    try {
+        const token = await getAccessTokenSilently();
+        const newItemData = {
+          content,
+          category,
+          flashcard: { front: content, back: 'Click to edit...' },
+          subjectId: selectedSubject.id
+        };
+        const res = await axios.post('/api/studyitems/add', newItemData, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        const savedItem = { ...res.data, id: res.data._id };
+        setStudyItems([...studyItems, savedItem]);
+    } catch (error) {
+        console.error("There was an error adding the study item!", error);
+    }
+  };
+
+  const fetchStudyItems = useCallback(async (subjectId) => {
+    try {
+        const token = await getAccessTokenSilently();
+        const response = await axios.get(`/api/studyitems/subject/${subjectId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        const itemsWithId = response.data.map(item => ({ ...item, id: item._id }));
+        setStudyItems(itemsWithId);
+    } catch (error) {
+        console.error(`Error fetching study items for subject ${subjectId}:`, error);
+        setStudyItems([]);
+    }
+  }, [getAccessTokenSilently]);
+
+  const deleteStudyItem = async (itemId) => {
+    if (!isAuthenticated) {
+        loginWithRedirect();
+        return;
+    }
+    try {
+        const token = await getAccessTokenSilently();
+        await axios.delete(`/api/studyitems/${itemId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        setStudyItems(studyItems.filter(item => item.id !== itemId));
+    } catch (error) {
+        console.error("Error deleting study item:", error);
+    }
+  };
+  
+  // Timer and Modal logic remains the same
+   // ... (useEffect for timer, formatTime, setExamTimer)
+   useEffect(() => {
     if (examTime && timeLeft > 0) {
       const timer = setInterval(() => {
         setTimeLeft(prev => {
@@ -70,77 +187,7 @@ export default function App() {
     setTimeLeft(examDate - now);
     setShowTimerModal(false);
   };
-
-  const addSubject = (name) => {
-    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57', '#FF9FF3'];
-    const newSubjectData = {
-      name,
-      color: colors[Math.floor(Math.random() * colors.length)]
-    };
-
-    axios.post('/api/subjects/add', newSubjectData)
-      .then(res => {
-        const savedSubject = { ...res.data, id: res.data._id };
-        setSubjects([...subjects, savedSubject]);
-      })
-      .catch(error => {
-        console.error("There was an error adding the subject!", error);
-      });
-  };
-
- const deleteSubject = (id) => {
-    axios.delete(`/api/subjects/${id}`)
-      .then(res => {
-        console.log(res.data);
-        setSubjects(subjects.filter(subject => subject.id !== id));
-      })
-      .catch(error => {
-        console.error("There was an error deleting the subject!", error);
-      });
-  };
-
-  const addStudyItem = (category, content) => {
-    if (!selectedSubject) return;
-    const newItemData = {
-      content,
-      category,
-      flashcard: { front: content, back: 'Click to edit...' },
-      subjectId: selectedSubject.id
-    };
-    axios.post('/api/studyitems/add', newItemData)
-      .then(res => {
-        const savedItem = { ...res.data, id: res.data._id };
-        setStudyItems([...studyItems, savedItem]);
-      })
-      .catch(error => console.error("There was an error adding the study item!", error));
-  };
-
-  const fetchStudyItems = (subjectId) => {
-    axios.get(`/api/studyitems/subject/${subjectId}`)
-      .then(response => {
-        if (Array.isArray(response.data)) {
-          const itemsWithId = response.data.map(item => ({ ...item, id: item._id }));
-          setStudyItems(itemsWithId);
-        } else {
-          console.error("Fetched study items data is not an array:", response.data);
-          setStudyItems([]);
-        }
-      })
-      .catch(error => {
-        console.error(`Error fetching study items for subject ${subjectId}:`, error);
-        setStudyItems([]);
-      });
-  };
-
-  const deleteStudyItem = (itemId) => {
-    axios.delete(`/api/studyitems/${itemId}`)
-      .then(() => {
-        setStudyItems(studyItems.filter(item => item.id !== itemId));
-      })
-      .catch(error => console.error("Error deleting study item:", error));
-  };
-
-  const openFlashcard = (item) => {
+   const openFlashcard = (item) => {
     setCurrentFlashcard(item.flashcard);
     setIsFlipped(false);
     setShowFlashcardModal(true);
@@ -148,38 +195,31 @@ export default function App() {
 
   const handleSelectSubject = (subject) => {
     setSelectedSubject(subject);
-    fetchStudyItems(subject.id); // Fetch items when a subject is selected
+    fetchStudyItems(subject.id);
     setCurrentView('subject');
   };
 
-  const handleBackToHome = () => {
-    setCurrentView('home');
-    setSelectedSubject(null);
-    setStudyItems([]); // Clear study items when going back home
-  };
-
+  if (isLoading) {
+    return <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center text-xl font-bold">Loading...</div>;
+  }
 
   return (
-    
-    <div className="min-h-screen  bg-gray-950 text-white font-orbitron">
-      <Navbar 
+    <div className="min-h-screen bg-gray-950 text-white font-orbitron">
+      <Navbar
         setCurrentView={setCurrentView}
         setShowTimerModal={setShowTimerModal}
         timeLeft={timeLeft}
         formatTime={formatTime}
       />
-
       <div className="pt-16">
-        {currentView === 'home' && (
-          <HomePage 
+        {currentView === 'home' ? (
+          <HomePage
             subjects={subjects}
             onSelectSubject={handleSelectSubject}
             onAddSubject={addSubject}
             onDeleteSubject={deleteSubject}
           />
-        )}
-        
-        {currentView === 'subject' && selectedSubject && (
+        ) : (
           <SubjectPage
             subject={selectedSubject}
             studyItems={studyItems}
@@ -192,7 +232,6 @@ export default function App() {
           />
         )}
       </div>
-
       {showTimerModal && (
         <TimerModal
           onClose={() => setShowTimerModal(false)}
@@ -204,9 +243,8 @@ export default function App() {
           }}
         />
       )}
-
       {showFlashcardModal && currentFlashcard && (
-        <FlashcardModal 
+        <FlashcardModal
           flashcard={currentFlashcard}
           isFlipped={isFlipped}
           onFlip={() => setIsFlipped(!isFlipped)}
