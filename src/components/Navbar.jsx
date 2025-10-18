@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { User } from 'lucide-react';
 import { useAuth0 } from '@auth0/auth0-react';
 import PixelPressableButton from '../components/PixelPressableButton';
+import logo from '../assets/logo.png';
+
 
 export default function Navbar({ setCurrentView, setShowTimerModal, timeLeft, formatTime }) {
   const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
@@ -27,20 +29,20 @@ export default function Navbar({ setCurrentView, setShowTimerModal, timeLeft, fo
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-lg border-b border-purple-500/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           <div
-            className="text-2xl font-black bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent cursor-pointer hover:scale-105 transition-transform"
+            className="flex-shrink-0 cursor-pointer hover:scale-105 transition-transform -ml-5 sm:-ml-4"
             onClick={() => {
                 setCurrentView('home');
                 setIsDropdownOpen(false); // Close dropdown on navigation
             }}
           >
-            RECOLIFY
+            <img src={logo} className="h-20 md:h-25 w-auto"/>
           </div>
 
           <PixelPressableButton
             onClick={() => setShowTimerModal(true)}
-            className="w-[39vw] h-12 md:w-[15vw]"
+            className="w-[39vw] h-14 md:w-[15vw] mr-8"
           >
             <span className="md:text-xl cursor-pointer text-sm font-bold ">
               {timeLeft ? (timeLeft < 3600000 ? ' ' + formatTime(timeLeft) : formatTime(timeLeft)) : 'Set Exam Timer'}
